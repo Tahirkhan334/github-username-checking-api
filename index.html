@@ -1,0 +1,316 @@
+<!-- GET https://api.github.com/users/:username -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GitHub Profile Card with Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .search-container {
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    .search-input {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 30px;
+      outline: none;
+      font-size: 1rem;
+      width: 220px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .search-input:focus {
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+
+    .search-button {
+      padding: 10px 20px;
+      background: #fff;
+      color: #667eea;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .search-button:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .card {
+      background: white;
+      width: 320px;
+      border-radius: 15px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      overflow: hidden;
+      animation: float 3s ease-in-out infinite;
+      position: relative;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+      transform: rotate(45deg);
+      animation: rotate 10s linear infinite;
+    }
+
+    .card-content {
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 4px solid #667eea;
+      margin-bottom: 1rem;
+      transition: transform 0.3s ease;
+    }
+
+    .avatar:hover {
+      transform: scale(1.1);
+    }
+
+    .username {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .bio {
+      font-size: 0.95rem;
+      color: #666;
+      margin: 0.8rem 0;
+    }
+
+    .location {
+      color: #555;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-weight: bold;
+      color: #444;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(45deg); }
+      100% { transform: rotate(405deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* HTML: <div class="loader"></div> */
+.loader {
+  width: 22px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #F10C49;
+  animation: l10 1.5s infinite linear;
+}
+@keyframes l10 {
+  0%    {box-shadow: 
+          0 -30px #F4DD51, calc(30px*0.707) calc(-30px*0.707) #E3AAD6,30px 0 #F4DD51, 0 0 #E3AAD6,
+          0 0 #F4DD51, 0 0 #E3AAD6,0 0 #F4DD51, 0 0 #E3AAD6}
+  12.5% {box-shadow: 
+          0 0 #F4DD51, calc(30px*0.707) calc(-30px*0.707) #E3AAD6,30px 0 #F4DD51, calc(30px*0.707) calc(30px*0.707) #E3AAD6,
+          0 0 #F4DD51, 0 0 #E3AAD6,0 0 #F4DD51, 0 0 #E3AAD6}
+  25%   {box-shadow: 
+          0 0 #F4DD51, 0 0 #E3AAD6,30px 0 #F4DD51, calc(30px*0.707) calc(30px*0.707) #E3AAD6,
+          0 30px #F4DD51, 0 0 #E3AAD6,0 0 #F4DD51, 0 0 #E3AAD6}
+  37.5% {box-shadow: 
+          0 0 #F4DD51, 0 0 #E3AAD6,0 0 #F4DD51, calc(30px*0.707) calc(30px*0.707) #E3AAD6,
+          0 30px #F4DD51, calc(-30px*0.707) calc(30px*0.707) #E3AAD6,0 0 #F4DD51, 0 0 #E3AAD6}
+  50%   {box-shadow: 
+          0 0 #F4DD51, 0 0 #E3AAD6,0 0 #F4DD51, 0 0 #E3AAD6,
+          0 30px #F4DD51, calc(-30px*0.707) calc(30px*0.707) #E3AAD6,-30px 0 #F4DD51, 0 0 #E3AAD6}
+  62.5% {box-shadow: 
+          0 0 #F4DD51, 0 0 #E3AAD6,0 0 #F4DD51, 0 0 #E3AAD6,
+          0 0 #F4DD51, calc(-30px*0.707) calc(30px*0.707) #E3AAD6,-30px 0 #F4DD51, calc(-30px*0.707) calc(-30px*0.707) #E3AAD6}
+  75%   {box-shadow: 
+          0 -30px #F4DD51, 0 0 #E3AAD6,0 0 #F4DD51, 0 0 #E3AAD6,
+          0 0 #F4DD51, 0 0 #E3AAD6,-30px 0 #F4DD51, calc(-30px*0.707) calc(-30px*0.707) #E3AAD6}
+  87.5% {box-shadow: 
+          0 -30px #F4DD51, calc(30px*0.707) calc(-30px*0.707) #E3AAD6,0 0 #F4DD51, 0 0 #E3AAD6,
+          0 0 #F4DD51, 0 0 #E3AAD6,0 0 #F4DD51, calc(-30px*0.707) calc(-30px*0.707) #E3AAD6}
+  100%  {box-shadow: 
+          0 -30px #F4DD51, calc(30px*0.707) calc(-30px*0.707) #E3AAD6,30px 0 #F4DD51, 0 0 #E3AAD6,
+          0 0 #F4DD51, 0 0 #E3AAD6,0 0 #F4DD51, 0 0 #E3AAD6}
+
+}
+  </style>
+</head>
+<body>
+
+  <!-- 🔍 Search Input & Button -->
+  <div class="search-container">
+    <input class="search-input" type="text" placeholder="Enter GitHub username">
+    <button class="search-button">Search</button>
+  </div>
+
+  <!-- 📇 Static GitHub Profile Card -->
+  <div class="card-Parent">
+    <div class="card">
+    <div class="card-content">
+      <img class="avatar" src="https://github.com/octocat.png" alt="GitHub Avatar">
+      <div class="username"></div>
+      <div class="bio">A friendly GitHub mascot. Loving code, collaboration & coffee ☕</div>
+      <div class="location">📍 San Francisco, CA</div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-number">8</div>
+          <div>Repos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">3920</div>
+          <div>Followers</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">9</div>
+          <div>Following</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="loader"></div>
+  </div>
+
+  
+
+</body>
+</html>
+
+
+
+
+
+<script>
+
+
+  
+  let cardParent = document.querySelector(".card-Parent")
+
+  let searchInput = document.querySelector(".search-input")
+  let searchBtn = document.querySelector(".search-button")
+
+
+
+
+    async function apiCall(username) {
+
+        // console.log(username);
+        
+        let response = await fetch(` https://api.github.com/users/${username}`)
+
+        let data = await response.json()
+        console.log(data);
+
+
+        let card = `
+        
+        
+        <div class="card">
+    <div class="card-content">
+      <img class="avatar" src="${data.
+avatar_url
+}" alt="GitHub Avatar">
+      <div class="username">${data.name}</div>
+      <div class="bio">${data.bio}</div>
+      <div class="location">${data.location}</div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-number">${data.public_repos}</div>
+          <div>repos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">${data.followers}</div>
+          <div>Followers</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">${data.following}</div>
+          <div>Following</div>
+        </div>
+      </div>
+    </div>
+  </div>
+        
+        `
+
+        cardParent.innerHTML = card
+        
+    }
+
+    searchBtn.addEventListener("click",()=>{
+      // console.log("clicked");
+      
+        if(searchInput.value){
+          console.log(searchInput.value);
+
+          cardParent.innerHTML = `
+          
+  <div class="loader"></div>`
+
+          apiCall(searchInput.value)
+          
+        }
+
+
+    })
+
+    // console.log("baga");
+    // apiCall()
+    
+</script>
+
+</body>
+</html>
